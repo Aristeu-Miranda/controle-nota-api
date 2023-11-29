@@ -14,6 +14,6 @@ const routes = require("./routes/router");
 app.use("/api", routes)
 
 //Iniciando o servidor express
-app.listen(5000, () => {
+app.listen(3000, () => {
     console.log("Server online!")
 })

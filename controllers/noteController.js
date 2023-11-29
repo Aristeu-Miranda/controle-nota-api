@@ -1,4 +1,4 @@
-const { Note: NoteModel } = require("../models/note");
+const NoteModel = require("../models/note");
 const noteController = {
     create: async (req, res) => {
         try {
@@ -16,11 +16,14 @@ const noteController = {
         } catch (error) {
             console.log(`Error: ${error}`)
         }
+    },
+    getAll: async (req, res) => {
+        try {
+            const notes = await NoteModel.find()
+            res.json(notes)
+        } catch (error) {
+            console.log(`error: ${error}`)
+        }
     }
-
-
-
-
-
 };
 module.exports = noteController;
