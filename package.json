@@ -4,7 +4,8 @@
   "description": "api controle de notas",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "build": "npm install"
   },
   "author": "Aristeu",
   "license": "ISC",

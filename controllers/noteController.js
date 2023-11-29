@@ -1,4 +1,4 @@
-const NoteModel = require("../models/note");
+const NoteModel = require("../models/Note");
 const noteController = {
     create: async (req, res) => { //metodo POST criando uma nova inserção
         try {
