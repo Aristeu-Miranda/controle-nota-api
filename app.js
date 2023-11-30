@@ -11,7 +11,7 @@ conn();
 
 //Rotas
 const routes = require("./routes/router");
-app.use("/api", routes)
+app.use(routes)
 
 //Iniciando o servidor express
 app.listen(3000, () => {
