@@ -8,4 +8,8 @@ router.use("/", notesRouter);
 const userRouter = require("./user");
 router.use("/", userRouter)
 
+//Login routes
+const loginRouter = require("./auth");
+router.use("/", loginRouter)
+
 module.exports = router;
