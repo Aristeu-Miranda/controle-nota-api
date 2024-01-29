@@ -25,6 +25,11 @@ const noteSchema = new Schema({
         type: Number,
         require: true
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId, //Pega o ID de quem está logado.
+        ref: "User",
+        require: true
+    }
 }, {timestamps: true}); 
 
 const Note = mongoose.model("Note", noteSchema);

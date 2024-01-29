@@ -22,6 +22,19 @@ const userController = {
             console.log(`Error: ${error}`)
         }
     },
+    get: async (req, res) => { //pegando só com base no ID pelo 'params'
+        try {
+            const id = req.params.id;
+            const users = await UserModel.findById(id)
+            if (!users) {
+                res.status(404).json({ msg: "Registro não encontrado" });
+                return
+            }
+            res.json(users)
+        } catch (error) {
+            console.log(`error: ${error}`)
+        }
+    },
     update: async (req, res) => {
         try {
             const id = req.params.id;

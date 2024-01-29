@@ -9,6 +9,7 @@ const noteController = {
                 portion: req.body.portion,
                 status: req.body.status,
                 date: req.body.date,
+                user: req.userId,
             };
 
             const response = await NoteModel.create(note);
@@ -20,6 +21,11 @@ const noteController = {
     getAll: async (req, res) => { //pegando todos os dados do banco
         try {
             const notes = await NoteModel.find()
+            if(notes.length === 0){
+                return res.status(400).send({
+                    message: "There are not notes register"
+                })
+            }
             res.json(notes)
         } catch (error) {
             console.log(`error: ${error}`)
