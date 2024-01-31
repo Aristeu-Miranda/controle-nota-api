@@ -1,4 +1,5 @@
 const NoteModel = require("../models/Note");
+const { countNotes } = require("../service/notesService")
 const noteController = {
     create: async (req, res) => { //metodo POST criando uma nova inserção
         try {
@@ -20,13 +21,44 @@ const noteController = {
     },
     getAll: async (req, res) => { //pegando todos os dados do banco
         try {
-            const notes = await NoteModel.find()
+            let {limit, offset} = req.query; //recebendo limit e offset da query
+            limit = Number(limit);
+            offset = Number(offset);
+            //Validação se tem ou não parametros setados pelo Front
+            if(!limit) {
+                limit = 5;
+            }
+            if(!offset) {
+                offset = 0;
+            }
+            const notes = await NoteModel.find().skip(offset).limit(limit); //Passando para a rota, os query parameters de limit e offset
+            const total = await countNotes();
+            //Verificando se a qtd de itens da query params é menor que o total de itens da colletion, para poder aplicar a paginação;
+            const currentyURL = req.baseUrl;
+            const next = offset + limit;
+            const nextUrl = next < total ? `${currentyURL}?limit=${limit}&offset=${next}` : null
             if(notes.length === 0){
                 return res.status(400).send({
                     message: "There are not notes register"
                 })
             }
-            res.json(notes)
+            //Mandando dados para no Frontend poder tratar
+            res.send({
+                nextUrl,
+                limit,
+                offset,
+                total,
+                
+                results: notes.map((item) => ({
+                    id: item._id,
+                    name: item.name,
+                    service: item.service,
+                    contract: item.contract,
+                    portion: item.portion,
+                    status: item.status,
+                    date: item.date,
+                }))
+            })
         } catch (error) {
             console.log(`error: ${error}`)
         }
