@@ -1,5 +1,5 @@
 const NoteModel = require("../models/Note");
-const { countNotes } = require("../service/notesService")
+const { countNotes, searchByName } = require("../service/notesService")
 const noteController = {
     create: async (req, res) => { //metodo POST criando uma nova inserção
         try {
@@ -32,11 +32,11 @@ const noteController = {
                 offset = 0;
             }
             const notes = await NoteModel.find().skip(offset).limit(limit); //Passando para a rota, os query parameters de limit e offset
-            const total = await countNotes();
+            const total = await countNotes(); //contando quantas colletions
             //Verificando se a qtd de itens da query params é menor que o total de itens da colletion, para poder aplicar a paginação;
             const currentyURL = req.baseUrl;
             const next = offset + limit;
-            const nextUrl = next < total ? `${currentyURL}?limit=${limit}&offset=${next}` : null
+            const nextUrl = next < total ? `${currentyURL}?limit=${limit}&offset=${next}` : null //criando a nova URL
             if(notes.length === 0){
                 return res.status(400).send({
                     message: "There are not notes register"
@@ -50,7 +50,7 @@ const noteController = {
                 total,
                 
                 results: notes.map((item) => ({
-                    id: item._id,
+                    _id: item._id,
                     name: item.name,
                     service: item.service,
                     contract: item.contract,
@@ -76,7 +76,7 @@ const noteController = {
             console.log(`error: ${error}`)
         }
     },
-    update: async (req, res) => {
+    update: async (req, res) => { //Update da NOTA
         try {
             const id = req.params.id;
             const note = {
@@ -97,7 +97,7 @@ const noteController = {
             console.log(`error: ${error}`)
         }
     },
-    delete: async (req, res) => {
+    delete: async (req, res) => { //Delete da NOTA
         try {
             const id = req.params.id;
             const notes = await NoteModel.findById(id)
@@ -107,6 +107,20 @@ const noteController = {
             }
             const deletedNote = await NoteModel.findByIdAndDelete(id)
             res.status(200).json({ deletedNote, msg: "Registro removido" })
+        } catch (error) {
+            console.log(`error: ${error}`)
+        }
+    },
+    getSearch: async (req, res) => {
+        try {
+            const {name} = req.query;
+            const searchNotes = await searchByName(name);
+            if(searchNotes.length === 0){
+                return res.status(400).send({
+                    message: "There are not notes register with this client"
+                })
+            }
+            return res.json(searchNotes)
         } catch (error) {
             console.log(`error: ${error}`)
         }
