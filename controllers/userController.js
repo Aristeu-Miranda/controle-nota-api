@@ -1,5 +1,5 @@
 const UserModel = require('../models/User');
-const { findByIdUserService, createNewUser, findEmailUser } = require("../service/userService");
+const { findByIdUserService, createNewUser, findEmailUser, findAllUsers } = require("../service/userService");
 const { generateToken } = require("../service/loginService")
 const userController = {
     create: async (req, res) => {
@@ -32,7 +32,7 @@ const userController = {
     },
     getAll: async (req, res) => {
         try {
-            const users = await UserModel.find()
+            const users = await findAllUsers()
             res.json(users)
         } catch (error) {
             console.log(`Error: ${error}`)
@@ -41,12 +41,12 @@ const userController = {
     get: async (req, res) => { //pegando só com base no ID pelo 'params'
         try {
             const id = req.params.id;
-            const users = await UserModel.findById(id)
-            if (!users) {
+            const user = await findByIdUserService(id)
+            if (!user) {
                 res.status(404).json({ msg: "Registro não encontrado" });
                 return
             }
-            res.json(users)
+            res.json(user)
         } catch (error) {
             console.log(`error: ${error}`)
         }
