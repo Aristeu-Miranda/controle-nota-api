@@ -1,5 +1,4 @@
-const UserModel = require('../models/User');
-const { findByIdUserService, createNewUser, findEmailUser, findAllUsers } = require("../service/userService");
+const { findByIdUserService, createNewUser, findEmailUser, findAllUsers, upUser, deletedUser } = require("../service/userService");
 const { generateToken } = require("../service/loginService")
 const userController = {
     create: async (req, res) => {
@@ -59,7 +58,7 @@ const userController = {
                 email: req.body.email,
                 password: req.body.password,
             };
-            const updateUser = await UserModel.findByIdAndUpdate(id, user)
+            const updateUser = await upUser(id, user)
             if(!updateUser) {
                 res.status(404).json({ msg: "Registro não encontrado" });
                 return
@@ -72,13 +71,13 @@ const userController = {
     delete: async (req, res) => {
         try {
             const id = req.params.id;
-            const users = await UserModel.findById(id);
-            if (!users) {
+            const user = await findByIdUserService(id)
+            if (!user) {
                 res.status(404).json({ msg: "Registro não encontrado" })
                 return
             }
-            const deleteUser = await UserModel.findByIdAndDelete(id)
-            res.status(200).json({ deleteUser, msg: "Usuário removido" })
+            await deletedUser(id)
+            res.status(200).json({ msg: "Usuário removido" })
         } catch (error) {
             console.log(`error: ${error}`)
         }
