@@ -11,13 +11,14 @@ const noteSchema = new Schema({
     },
     contract: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     portion: {
         type: String,
         require: true
     },
-    status: {
+    description: {
         type: String,
         require: true
     },

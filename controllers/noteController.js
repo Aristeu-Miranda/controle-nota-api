@@ -1,20 +1,33 @@
 const NoteModel = require("../models/Note");
-const { countNotes, searchByName } = require("../service/notesService")
+const { countNotes, searchByName, findContract, createNewNote } = require("../service/notesService")
 const noteController = {
     create: async (req, res) => { //metodo POST criando uma nova inserção
         try {
-            const note = {
-                name: req.body.name,
-                service: req.body.service,
-                contract: req.body.contract,
-                portion: req.body.portion,
-                status: req.body.status,
-                date: req.body.date,
-                user: req.userId,
-            };
-
-            const response = await NoteModel.create(note);
-            res.status(201).json({ response, msg: "Registro de nota cadastrada com sucesso!" })
+            const { name, service, contract, portion, description, date} = req.body
+            if(!name || !service || !contract || !portion || !description || !date) {
+                return res.status(400).send({ message: "send all fields"})
+            }
+            const foundContract = await findContract(contract);
+            if(foundContract) {
+                return res.status(400).send({ message: "register allready exists"})
+            }
+            const note = await createNewNote(req.body).catch((error) => console.log(error.message))
+            if(!note) {
+                return res.status(400).send({ message: "New register of note failed"})
+            }
+            const idUser = req.userId
+            res.status(201).send({ 
+                note: {
+                    id: note.id,
+                    name,
+                    service,
+                    contract,
+                    portion,
+                    description,
+                    date,
+                },
+                idUser,
+             })
         } catch (error) {
             console.log(`Error: ${error}`)
         }
