@@ -1,4 +1,5 @@
 const NoteModel = require("../models/Note");
+const UserModel = require("../models/User");
 const { countNotes, searchByName, findContract, createNewNote } = require("../service/notesService")
 const noteController = {
     create: async (req, res) => { //metodo POST criando uma nova inserção
@@ -7,15 +8,17 @@ const noteController = {
             if(!name || !service || !contract || !portion || !description || !date) {
                 return res.status(400).send({ message: "send all fields"})
             }
-            const foundContract = await findContract(contract);
-            if(foundContract) {
-                return res.status(400).send({ message: "register allready exists"})
-            }
+            const idUser = req.userId
+            const existingContract = await findContract(idUser, contract);
+                if (existingContract) {
+                    return res.status(400).send({ message: "register already exists" });
+                 }
             const note = await createNewNote(req.body).catch((error) => console.log(error.message))
             if(!note) {
                 return res.status(400).send({ message: "New register of note failed"})
             }
-            const idUser = req.userId
+            
+            await UserModel.findByIdAndUpdate(idUser, { $push: { notes: note } })
             res.status(201).send({ 
                 note: {
                     id: note.id,
